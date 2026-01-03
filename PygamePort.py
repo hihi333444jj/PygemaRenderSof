@@ -3,11 +3,8 @@ import random,math
 from HelperScripts.Color import RandomGradient
 from HelperScripts.Create_Shape import Line
 from HelperScripts.ManageScene import *
-from HelperScripts.Util import StartAll
+from HelperScripts.Util import StartAll,GetPos
 import HelperScripts.screen as var
-
-from pygame import mixer
-mixer.init() 
 if __name__ == "__main__":
     pygame.init()
 def app():
@@ -27,7 +24,7 @@ def main():
         #Move(['sky', 'sun', 'background', 'tree','shop'],(1,1))
         Max = max(pygame.display.get_window_size()[0],pygame.display.get_window_size()[1])
         #Line(random.randint(1,Max),random.randint(1,Max),random.randint(1,Max),random.randint(1,Max),RandomGradient(20,50,"right"),10, render=True)
-        
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT: #end event/ close window if the X button is pressed
                 running = False

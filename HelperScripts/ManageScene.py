@@ -7,50 +7,6 @@ import threading
 import time
 import HelperScripts.screen as var
 clock =  pygame.time.Clock()
-
-#manage objects
-# region Manageing objects
-
-def AddObject(*args): #input object then name so [rect(args), "rectangle"]
-    for i in args:
-        var.Parts[0].append(i[0])
-        var.Parts[1].append(i[1])
-    var.UpdateFrame = True
-
-def DeleteObject(*args):
-    for i in args:
-        Del = var.Parts[1].index(i)
-        #list.remove(Var) deletes the item that is called Var from list
-        #list.pop(numb) removes the list[numb] from the list and if no number givven removes the last value
-        var.Parts[0].pop(Del)
-        var.Parts[1].pop(Del)
-
-def Group(*Draw, width=600, height=600):
-
-    temp_surface = pygame.Surface((width, height), pygame.SRCALPHA)
-
-    for item in Draw:
-        if isinstance(item, tuple) and len(item) == 2:
-            surf, rect = item
-            temp_surface.blit(surf, rect)
-        elif isinstance(item, list):
-            for sub in item:
-                if isinstance(sub, tuple) and len(sub) == 2:
-                    temp_surface.blit(sub[0], sub[1])
-
-    return temp_surface, temp_surface.get_rect(topleft=(0,0))
-
-#movement
-def Move(Name,pos):
-    #print(Name,pos)
-    var.UpdateFrame = True
-    if isinstance(Name,list):
-        for name in Name:
-            var.Parts[0][var.Parts[1].index(name)][1].move_ip(pos)
-    else:
-        var.Parts[0][var.Parts[1].index(Name)][1].move_ip(pos)
-
-#untested
 def MoveToTime(Name, pos, duration=None):
     var.UpdateFrame = True
     def MoveToPos_thread(name_list, offset, duration):
@@ -86,29 +42,8 @@ def MoveToTime(Name, pos, duration=None):
     
     t = threading.Thread(target=MoveToPos_thread, args=(Name, pos, duration))
     t.start()
-# endregion
-
-# region Sound
-
-def AddSound(*args): #input object then name so [rect(args), "rectangle"]
-    for i in args:
-        var.Sounds[0].append(i[0])
-        var.Sounds[1].append(i[1])
-    var.UpdateFrame = True
-
-def DeleteSound(*args):
-    for i in args:
-        Del = var.Sounds[1].index(i)
-        #list.remove(Var) deletes the item that is called Var from list
-        #list.pop(numb) removes the list[numb] from the list and if no number givven removes the last value
-        var.Sounds[0].pop(Del)
-        var.Sounds[1].pop(Del)
 
 
-
-# endregion
-
-# region working on
 def grav():
     while True:
         for Object in var.GravObjects:
@@ -138,4 +73,31 @@ def grav():
     
 def ObjectGravity(Object,Bounce):
     a=a
-# endregion
+
+
+
+
+
+def Move(Name,pos):
+    #print(Name,pos)
+    var.UpdateFrame = True
+    if isinstance(Name,list):
+        for name in Name:
+            var.Parts[0][var.Parts[1].index(name)][1].move_ip(pos)
+    else:
+        var.Parts[0][var.Parts[1].index(Name)][1].move_ip(pos)
+
+def Group(*Draw, width=600, height=600):
+
+    temp_surface = pygame.Surface((width, height), pygame.SRCALPHA)
+
+    for item in Draw:
+        if isinstance(item, tuple) and len(item) == 2:
+            surf, rect = item
+            temp_surface.blit(surf, rect)
+        elif isinstance(item, list):
+            for sub in item:
+                if isinstance(sub, tuple) and len(sub) == 2:
+                    temp_surface.blit(sub[0], sub[1])
+
+    return temp_surface, temp_surface.get_rect(topleft=(0,0))
