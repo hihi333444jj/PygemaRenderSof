@@ -2,15 +2,13 @@ import os
 import json
 import urllib.request
 import datetime
-import time
 
 # ===================== CONFIG =====================
 REPO_OWNER = "hihi333444jj"
 REPO_NAME = "PygemaRenderSof"
-BRANCH = "main"  # change if needed
+BRANCH = "main"  # change to "master" if needed
 API_BASE = "https://api.github.com"
 RAW_BASE = f"https://raw.githubusercontent.com/{REPO_OWNER}/{REPO_NAME}/{BRANCH}"
-TIMESTAMP_FILE = "last_sync.txt"
 # ==================================================
 
 
@@ -39,18 +37,6 @@ def get_last_commit_time(path):
     ).timestamp()
 
 
-def load_last_run_time():
-    if not os.path.exists(TIMESTAMP_FILE):
-        return 0
-    with open(TIMESTAMP_FILE, "r") as f:
-        return float(f.read().strip())
-
-
-def save_last_run_time():
-    with open(TIMESTAMP_FILE, "w") as f:
-        f.write(str(time.time()))
-
-
 def download_file(path):
     url = f"{RAW_BASE}/{path}"
     os.makedirs(os.path.dirname(path), exist_ok=True)
@@ -65,9 +51,7 @@ def ask_user(path, reason):
 
 
 def sync():
-    last_run = load_last_run_time()
-    print(f"Last run time: {datetime.datetime.fromtimestamp(last_run)}\n")
-
+    print("Scanning GitHub repository...\n")
     tree = get_repo_tree()
 
     for item in tree:
@@ -76,29 +60,27 @@ def sync():
 
         path = item["path"]
         github_time = get_last_commit_time(path)
-
-        if github_time is None or github_time <= last_run:
-            continue  # not changed since last run
+        if github_time is None:
+            continue
 
         if os.path.exists(path):
             local_time = os.path.getmtime(path)
             if github_time > local_time:
-                if ask_user(path, "Updated on GitHub"):
+                if ask_user(path, "Outdated file"):
                     print("  → Updating")
                     download_file(path)
                     os.utime(path, (github_time, github_time))
                 else:
                     print("  → Skipped")
         else:
-            if ask_user(path, "New file on GitHub"):
+            if ask_user(path, "Missing file"):
                 print("  → Downloading")
                 download_file(path)
                 os.utime(path, (github_time, github_time))
             else:
                 print("  → Skipped")
 
-    save_last_run_time()
-    print("\nSync complete. Timestamp updated.")
+    print("\nSync complete.")
 
 
 if __name__ == "__main__":

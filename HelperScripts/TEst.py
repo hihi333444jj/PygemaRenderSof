@@ -1,7 +1,7 @@
 
-from HelperScripts.Create_Shape import Rect, Circle, Oval, Polygon,Line
-from HelperScripts.Color import gradient, rgb
-from HelperScripts.ManageScene import Group, Move
+from HelperScripts.Create_Shape import *
+from HelperScripts.Color import *
+from HelperScripts.ManageScene import *
 from HelperScripts.Util import with_names
 from time import sleep
 import pygame
@@ -38,6 +38,8 @@ def animate():
     for i in range(1,120):
        clock.tick(60)
     print(2)
+    DeleteObject('sun')
+    #DELETS THE SUN
     var.UpdateFrame = True
 def Start(screen):
     ball = Group(
