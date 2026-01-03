@@ -1,9 +1,0 @@
-To update files go to the txt file in UploadUpdate/files_to_upload.txt" and type the file directoey
-so this could be for an example:
-HelperScripts\TEst.py
-
-
-You can upload as many files at once just make it a list.
-you run the script UploadUpdate/UploadFiles.py to upload
-To update your files with stoof i have added run UploadUpdate/Update.py
-TO UPDATE YOUR FILES I WOULD RECOMEND NOT AUTO UPDATING EVERTHING UPDTE THEM ONE BY ONE
