@@ -6,7 +6,7 @@ def Rect(X, Y, width, height, fill=(0,0,0), border=None, borderWidth=2,
      opacity=255, rotateAngle=0, align='left-top',
      Screen = screen,render = False):
     
-    #Create rectangle/frame
+    #Create rectangle/framee
     if border == None:
         TempSurf = pygame.Surface((width, height), pygame.SRCALPHA)
         #set graident texture size
@@ -215,3 +215,4 @@ def Polygon(*args,
         Screen.blit(TempSurf, rect)
     else:
         return(TempSurf,rect)
+
