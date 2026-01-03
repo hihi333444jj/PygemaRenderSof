@@ -1,10 +1,10 @@
-bakjsaaaimport pygame
+import pygame
 import math
 from HelperScripts.Color import *
-import HelperScripts.screen as vare
+import HelperScripts.screen as var
 from HelperScripts.Util import GetPos,GetSize
-impoeeeeeeeeeeeert threading
-import timeajhbabkaehowobhdoshbnioef
+import threading
+import time
 import HelperScripts.screen as var
 clock =  pygame.time.Clock()
 
@@ -139,7 +139,3 @@ def grav():
 def ObjectGravity(Object,Bounce):
     a=a
 # endregion
-
-
-
-
