@@ -1,4 +1,4 @@
-import pygame
+bakjsaaaimport pygame
 import math
 from HelperScripts.Color import *
 import HelperScripts.screen as vare
@@ -139,5 +139,6 @@ def grav():
 def ObjectGravity(Object,Bounce):
     a=a
 # endregion
+
 
 
