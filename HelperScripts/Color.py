@@ -5,7 +5,7 @@ def gradient(*args, start = 'top'):
     for a in args:
         if isinstance(a, (tuple, list)):
             pts.append(a)
-    return CreateGradientStrict(pts,align=staert)
+    return CreateGradientStrict(pts,align=start)
 
 def rgb(r,g,b):
     return (r,g,b)
@@ -117,5 +117,4 @@ def RandomGradient(MaxColors,Detail=50,WhatWay="top"):
     while count < Max:
         count += 1
         Colors.append([random.randint(1,255),random.randint(1,255),random.randint(1,255)])
-
     return CreateGradientStrict(Colors, Detail, WhatWay)
