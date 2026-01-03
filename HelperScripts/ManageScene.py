@@ -4,7 +4,7 @@ from HelperScripts.Color import *
 import HelperScripts.screen as vare
 from HelperScripts.Util import GetPos,GetSize
 import threading
-import time
+import timeajhbabkaehowobhdoshbnioef
 import HelperScripts.screen as var
 clock =  pygame.time.Clock()
 
@@ -139,4 +139,5 @@ def grav():
 def ObjectGravity(Object,Bounce):
     a=a
 # endregion
+
 
