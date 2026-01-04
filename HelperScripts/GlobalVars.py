@@ -1,6 +1,6 @@
 import pygame
 #screen = pygame.display.set_mode((1920, 1200),pygame.RESIZABLE)
-ScreenSize = (1000, 1000)
+ScreenSize = (400, 400)
 screen = pygame.display.set_mode(ScreenSize,pygame.RESIZABLE)
 Parts = []
 Sounds =  [] #sounds that are currently playing
