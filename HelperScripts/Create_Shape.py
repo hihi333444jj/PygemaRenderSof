@@ -1,6 +1,6 @@
 import pygame
 import math
-from HelperScripts.screen import screen
+from HelperScripts.GlobalVars import screen
 
 def Rect(X, Y, width, height, fill=(0,0,0), border=None, borderWidth=2,
      opacity=255, rotateAngle=0, align='left-top',
