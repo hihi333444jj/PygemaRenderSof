@@ -42,9 +42,7 @@ def animate():
     #DELETS THE SUN
     var.UpdateFrame = True
 def Start(screen):
-    ball = Group(
-        Circle(200, 220, 80, fill=gradient(rgb(255, 255, 255), rgb(255, 255, 255), rgb(255, 255, 100),start="center"), opacity=100),
-    )
+    #ball = Group(Circle(200, 220, 80, fill=gradient(rgb(255, 255, 255), rgb(255, 255, 255), rgb(255, 255, 100),start="center"), opacity=100),)
     sky = Rect(0, 0, 400, 250, fill=gradient(rgb(255, 69, 0), rgb(255, 165, 0), rgb(255, 160, 122), rgb(255, 105, 180), rgb(150, 0, 150), start='bottom'))
     sun = Group(
         Circle(200, 220, 80, fill=gradient(rgb(255, 255, 255), rgb(255, 255, 255), rgb(255, 255, 100),start="center"), opacity=225),
@@ -122,7 +120,7 @@ def Start(screen):
     t = threading.Thread(target=animate, daemon=True)
     t.start()
     
-    return with_names(sky,sun,background,tree,shop,ball)
+    return with_names(sky,sun,background,tree,shop)
 
 
 
