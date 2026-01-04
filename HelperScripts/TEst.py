@@ -6,7 +6,7 @@ from HelperScripts.Util import with_names
 from time import sleep
 import pygame
 import threading
-import HelperScripts.screen as var
+import HelperScripts.GlobalVars as var
 clock = pygame.time.Clock()
 ###starting scene 
 #background
