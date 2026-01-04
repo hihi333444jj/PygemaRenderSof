@@ -1,6 +1,7 @@
 import pygame
 #screen = pygame.display.set_mode((1920, 1200),pygame.RESIZABLE)
-screen = pygame.display.set_mode((400, 400),pygame.RESIZABLE)
+ScreenSize = (1000, 1000)
+screen = pygame.display.set_mode(ScreenSize,pygame.RESIZABLE)
 Parts = []
 Sounds =  [] #sounds that are currently playing
 MusicPlaylists = []# this will store [playlist,[CurrentPlaylist,CurrentSong]] playlist is just an array of sound files
