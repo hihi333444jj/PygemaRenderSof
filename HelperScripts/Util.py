@@ -19,9 +19,7 @@ def timer_thread():
             var.CurrentHr += 1
         clock.tick(var.FPS)
         #print(var.CurrentFps,var.CurrentSec,var.CurrentMin,var.CurrentHr)
-def TrackTime():
-    t = threading.Thread(target=timer_thread, daemon=True)
-    t.start()
+
 
 def GetPos(Name):
     if isinstance(Name,list):
@@ -40,10 +38,12 @@ def GetSize(Name):
         Size=var.Parts[0][var.Parts[1].index(Name)][0].get_size()
     return Size
 def StartAll():
-    from HelperScripts.TEst import Start
+    from Start import Start
     var.Parts = Start(var.screen)
+    #import SandGame
     var.PartsOri = var.Parts
-    TrackTime()
+    t = threading.Thread(target=timer_thread, daemon=True)
+    t.start()
 def with_names(*items):
     from HelperScripts.ManageScene import grav
     frame = inspect.currentframe().f_back
