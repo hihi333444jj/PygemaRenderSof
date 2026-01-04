@@ -1,5 +1,5 @@
 import inspect, pygame
-import HelperScripts.screen as var
+import HelperScripts.GlobalVars as var
 import threading
 
 
