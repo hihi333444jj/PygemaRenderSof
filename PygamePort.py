@@ -4,7 +4,7 @@ from HelperScripts.Color import RandomGradient
 from HelperScripts.Create_Shape import Line
 from HelperScripts.ManageScene import *
 from HelperScripts.Util import StartAll
-import HelperScripts.screen as var
+import HelperScripts.GlobalVars as var
 
 from pygame import mixer
 mixer.init() 
