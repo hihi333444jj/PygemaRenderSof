@@ -19,7 +19,7 @@ def main():
     #Start(screen)
     var.ScreenSize = (pygame.display.get_window_size()[0],pygame.display.get_window_size()[1])
     var.UpdateFrame = True
-    var.GravObjects = [[['ball'],[25,1],.9,[55,55]]]
+    #var.GravObjects = [[['ball'],[25,1],.9,[55,55]]]
     while running:
         #var.UpdateFrame = True
         #Move(['sky', 'sun', 'background', 'tree','shop'],(1,1))
