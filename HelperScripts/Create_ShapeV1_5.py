@@ -1,7 +1,7 @@
 import pygame
 import math
-from HelperScripts.screen import screen
-import HelperScripts.screen as var
+from HelperScripts.GlobalVars import screen
+import HelperScripts.GlobalVars as var
 
 def upscale(v):
     return max(1, int(v * var.detail))
