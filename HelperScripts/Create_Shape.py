@@ -3,34 +3,28 @@ import math
 from HelperScripts.GlobalVars import screen
 
 def Rect(X, Y, width, height, fill=(0,0,0), border=None, borderWidth=2,
-     opacity=255, rotateAngle=0, align='left-top',
-     Screen = screen,render = False):
+         opacity=255, rotateAngle=0, align='left-top',
+         Screen = screen, render = False):
     
     #Create rectangle/frame
-    if border == None:
-        TempSurf = pygame.Surface((width, height), pygame.SRCALPHA)
-        #set graident texture size
-        if fill[0] == "gradient":
-            TempSurf.blit(pygame.transform.scale(fill[1], (width, height)), (0, 0))
-        else:
-            TempSurf.fill(pygame.Color(fill[0],fill[1],fill[2],255))
-    else:
-        #make the frame + border size
-        TempSurf = pygame.Surface((width+(borderWidth*2), height+(borderWidth*2)), pygame.SRCALPHA)
-        
-        # Draw the border first
-        if isinstance(border, list) and border[0] == "gradient":
-            TempSurf.blit(pygame.transform.scale(border[1], (width+(borderWidth*2), height+(borderWidth*2))), (0,0))
-        else:
-            pygame.draw.rect(TempSurf, border, pygame.Rect(0, 0, width+(borderWidth*2), height+(borderWidth*2)))
+    total_width = width + (borderWidth*2 if border else 0)
+    total_height = height + (borderWidth*2 if border else 0)
+    TempSurf = pygame.Surface((total_width, total_height), pygame.SRCALPHA)
 
-        # Draw the inner fill
-        if fill[0] == "gradient":
-            TempSurf.blit(pygame.transform.scale(fill[1], (width, height)), (borderWidth, borderWidth))
+    # Draw the border first
+    if border:
+        if isinstance(border, list) and border[0] == "gradient":
+            TempSurf.blit(pygame.transform.scale(border[1], (total_width, total_height)), (0,0))
         else:
-            Box = pygame.Surface((width, height), pygame.SRCALPHA)
-            Box.fill((fill[0],fill[1],fill[2]))
-            TempSurf.blit(Box,(borderWidth, borderWidth))
+            pygame.draw.rect(TempSurf, border, pygame.Rect(0, 0, total_width, total_height))
+
+    # Draw the inner fill
+    fill_surf = pygame.Surface((width, height), pygame.SRCALPHA)
+    if isinstance(fill, list) and fill[0] == "gradient":
+        fill_surf.blit(pygame.transform.scale(fill[1], (width, height)), (0, 0))
+    else:
+        fill_surf.fill((fill[0], fill[1], fill[2]))
+    TempSurf.blit(fill_surf, (borderWidth if border else 0, borderWidth if border else 0))
     
     #set transparency
     TempSurf.set_alpha(opacity)
@@ -39,11 +33,10 @@ def Rect(X, Y, width, height, fill=(0,0,0), border=None, borderWidth=2,
     #set final pos and rotashe/confirm it
     RotatedRect = RotatedSurf.get_rect(topleft=(X, Y))
     #add to canvis
-
-    if render == True:
-        Screen.blit(TempSurf, RotatedRect)
+    if render:
+        Screen.blit(RotatedSurf, RotatedRect)
     else:
-        return (RotatedSurf,RotatedRect)
+        return (RotatedSurf, RotatedRect)
 
 def Oval(X, Y, width, height, fill=(0,0,0), border=None,
      borderWidth=2, opacity=255, rotateAngle=0,
