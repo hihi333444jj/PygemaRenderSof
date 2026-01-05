@@ -1,25 +1,27 @@
 import HelperScripts.GlobalVars as var
 from HelperScripts.ManageScene import AddObject,Group,DeleteObject
 from HelperScripts.Create_Shape import Rect
+from itertools import product
 import pygame
 import threading
-import math
-from time import sleep
-from random import randint
-
+import numpy as np
 # region Vars
 GS = [4,4]
 CGS = [10,10] #compressed grid size for less lag
 # endregion 
 
-pendingupdate = []
 # region Setup helper vars
+SAND_COLOR = (212,201,0)
+AIR_COLOR = (255,255,255)
 GridPixels = []
-GridPixelValue = []
+pendingupdate = []
 clock =  pygame.time.Clock()
 GridSize = [int(var.ScreenSize[0]/GS[0]),int(var.ScreenSize[1]/GS[1])]
 width, height = GridSize
-ActivePixels = []
+GridPixelValue = np.full((width, height), 0, dtype=object)
+to_remove = set()
+to_add = set()
+ActivePixels = set() #tuples work better becuse it will become very large
 # endregion
 
 # region helper defs
@@ -28,9 +30,9 @@ def idx(x, y): #this converts X,Y into a 2d array
     return (x * height + y)
 
 def GetCGPos(X,Y):
-    return(math.floor(X/CGS[0]),math.floor(Y/CGS[1]))
+    return(X//CGS[0],Y//CGS[1])
 def GetColor(Type):
-    if Type == "Sand":
+    if Type == 1:
         return(212,201,0)
     return(255,255,255)
 def CGUpdate(x,y):
@@ -47,19 +49,17 @@ def CGUpdate(x,y):
 
 # region Main defs
 def GenGrid():
-    global width,height,GS,GridPixels,GridPixelValue,CGS
+    global width,height,GS,GridPixels,CGS
     GridPixels = []
 
-    for x in range(width):
-        for y in range(height):
-            GridPixelValue.append("Air")
-            GridPixels.append(
-                Rect(
-                    x * GS[0], y * GS[1],
-                    GS[0], GS[1],
-                    (255, 255, 255)
-                )
+    for x, y in product(range(width), range(height)):
+        GridPixels.append(
+            Rect(
+                x * GS[0], y * GS[1],
+                GS[0], GS[1],
+                (255, 255, 255)
             )
+        )
 
     for x in range(0, width, CGS[0]):
         for y in range(0, height, CGS[1]):
@@ -80,96 +80,81 @@ def GenGrid():
                 ])
     
 def CreateSandEveryFPS():
+    fps = var.FPS
     while True:
-        clock.tick(100)
-        pos = (20,20)
-        GridPixelValue[idx(*pos)] = "Sand"
+        clock.tick(fps)
+        pos = (22,22)   
+        GridPixelValue[pos[0],pos[1]] = 1
         GridPixels[idx(*pos)] = Rect(
             pos[0] * GS[0], pos[1] * GS[1],
             GS[0], GS[1],
-            GetColor("Sand")
+            SAND_COLOR
         )
+        if pos not in to_add:
+            to_add.add(pos)
         CGSpos = GetCGPos(*pos)
-        try:
-            ActivePixels.index([pos[0],pos[1]])
-        except:
-            ActivePixels.append([pos[0],pos[1]])
-        CGUpdate(*CGSpos)
+        if tuple(CGSpos) not in pendingupdate:
+            pendingupdate.append(tuple(CGSpos))
+        if tuple(CGSpos) not in pendingupdate:
+            pendingupdate.append(tuple(CGSpos))
         
-
-            
-def GravMove(wat,where,type):
+     
+def GravMove(wat,where,type,color):
     global pendingupdate
     #clear old sand
-    GridPixelValue[idx(*wat)] = "Air"
-    GridPixels[idx(*wat)] = Rect(
-        wat[0] * GS[0], wat[1] * GS[1],
-        GS[0], GS[1],
-        GetColor("Air")
-    )
+    GridPixelValue[wat[0],wat[1]] = 0
+    #GridPixels[idx(wat[0] * GS[0], wat[1] * GS[1])].color = GetColor("Sand")
+    GridPixels[idx(*wat)][0].fill(AIR_COLOR)
+
     #set new type
-    GridPixelValue[idx(where[0], where[1]+1)] = type
-    GridPixels[idx(where[0], where[1]+1)] = Rect(
-        where[0] * GS[0], (where[1]+1) * GS[1],
-        GS[0], GS[1],
-        GetColor(type)
-    )
+    x, y = where
+    GridPixelValue[x,y] = type
+    GridPixels[idx(x, y)][0].fill(SAND_COLOR)
     #remove old active pixle and add new
-    ActivePixels.remove(wat)
-    new_pos = [where[0], where[1]+1]
-    ActivePixels.append(new_pos)
+    to_remove.add(wat)
+    to_add.add((x, y))
     #update frame
-    try:
-        pendingupdate.index([*GetCGPos(*new_pos)])
-    except:
-        pendingupdate.append([*GetCGPos(*new_pos)])
+    CGpos = GetCGPos(x, y)
+    pendingupdate.append(tuple(CGpos))
 
 def Physics():
-    
+    fps = var.FPS
     while True:
-        clock.tick(240)
-        for pos in ActivePixels.copy():
+        clock.tick(fps)
+        
+        for pos in ActivePixels:
             x, y = pos
-            if GridPixelValue[idx(x, y)] == "Sand":
+            if GridPixelValue[x,y] == 1:
                 if y < height - 1:
                     # try to move down
-                    if GridPixelValue[idx(x, y+1)] == "Air":
-                        GravMove(pos, [x, y], "Sand")
+                    if GridPixelValue[x,y+1] == 0:
+                        GravMove(pos, (x, y+1), 1,SAND_COLOR)
                     else:
-                        left_free = x-1 >= 0 and GridPixelValue[idx(x-1, y+1)] == "Air"
-                        right_free = x+1 < width and GridPixelValue[idx(x+1, y+1)] == "Air"
-                        if left_free and right_free:
-                            if randint(0,1) == 0:
-                                GravMove(pos, [x-1, y], "Sand")
-                            else:
-                                GravMove(pos, [x+1, y], "Sand")
-                        elif left_free:
-                            GravMove(pos, [x-1, y], "Sand")
-                        elif right_free:
-                            GravMove(pos, [x+1, y], "Sand")
-                        else:
-                            ActivePixels.remove(pos)
+                        for dx in [0, -1, 1]:
+                            nx = x + dx
+                            ny = y + 1
+                            if 0 <= nx < width and GridPixelValue[nx][ny] == 0:
+                                GravMove(pos, (nx, ny), 1,SAND_COLOR)
+                                break
+
                 else:
-                    ActivePixels.remove(pos)
-        for UpdateNext in pendingupdate:
-            CGUpdate(*UpdateNext)
-
+                    to_remove.add(pos)
+        for Remove in to_remove:
+            ActivePixels.discard(Remove)
+        for Add in to_add:
+            ActivePixels.add(Add)
+        to_remove.clear()
+        to_add.clear()
         
-
-
-
+        
 # endregion
-
-
-
-
-
-
-
-
-
-
-
+def redraw():
+    fps = var.FPS
+    while True:
+        clock.tick(fps)
+        for pos in np.unique(pendingupdate, axis=0): 
+            CGUpdate(*pos)
+        pendingupdate.clear()
 print("starting sand game")
 print(GridSize)
 
@@ -180,3 +165,6 @@ CSE = threading.Thread(target=CreateSandEveryFPS, daemon=True)
 CSE.start()
 Phy = threading.Thread(target=Physics, daemon=True)
 Phy.start()
+UpdateScreen = threading.Thread(target=redraw, daemon=True)
+UpdateScreen.start()
+
