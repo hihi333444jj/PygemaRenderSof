@@ -44,6 +44,10 @@ def StartAll():
     var.PartsOri = var.Parts
     t = threading.Thread(target=timer_thread, daemon=True)
     t.start()
+    from HelperScripts.ManageSound import Music, AddMusic
+    t = threading.Thread(target=Music, daemon=True)
+    t.start()
+    AddMusic("Music")
 def with_names(*items):
     from HelperScripts.ManageScene import grav
     frame = inspect.currentframe().f_back
