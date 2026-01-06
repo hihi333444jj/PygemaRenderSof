@@ -4,7 +4,11 @@ from HelperScripts.Util import StartAll
 import HelperScripts.GlobalVars as var
 
 from pygame import mixer
+
 mixer.init() 
+#Set File quality
+pygame.mixer.init(frequency=44100, size=-16, channels=2, buffer=512)
+
 if __name__ == "__main__":
     pygame.init()
 def app():
