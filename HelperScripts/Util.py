@@ -38,16 +38,16 @@ def GetSize(Name):
         Size=var.Parts[0][var.Parts[1].index(Name)][0].get_size()
     return Size
 def StartAll():
-    #from Start import Start
-    #var.Parts = Start(var.screen)
-    import SandGame
+    from Start import Start
+    var.Parts = Start(var.screen)
+    #import SandGame
     var.PartsOri = var.Parts
     t = threading.Thread(target=timer_thread, daemon=True)
     t.start()
-    from HelperScripts.ManageSound import Music, AddMusic
+    from HelperScripts.ManageMusic import Music
     t = threading.Thread(target=Music, daemon=True)
     t.start()
-    AddMusic("Music")
+    #AddMusic("Music")
 def with_names(*items):
     from HelperScripts.ManageScene import grav
     frame = inspect.currentframe().f_back
