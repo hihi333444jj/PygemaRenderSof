@@ -38,9 +38,9 @@ def GetSize(Name):
         Size=var.Parts[0][var.Parts[1].index(Name)][0].get_size()
     return Size
 def StartAll():
-    from Start import Start
-    var.Parts = Start(var.screen)
-    #import SandGame
+    #from Start import Start
+    #var.Parts = Start(var.screen)
+    import SandGame
     var.PartsOri = var.Parts
     t = threading.Thread(target=timer_thread, daemon=True)
     t.start()
