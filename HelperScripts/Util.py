@@ -37,19 +37,8 @@ def GetSize(Name):
     else:
         Size=var.Parts[0][var.Parts[1].index(Name)][0].get_size()
     return Size
-def StartAll():
-    from Start import Start
-    var.Parts = Start(var.screen)
-    #import SandGame
-    var.PartsOri = var.Parts
-    t = threading.Thread(target=timer_thread, daemon=True)
-    t.start()
-    from HelperScripts.ManageMusic import Music
-    t = threading.Thread(target=Music, daemon=True)
-    t.start()
-    #AddMusic("Music")
 def with_names(*items):
-    from HelperScripts.ManageScene import grav
+    from HelperScripts.Manage.Scene import grav
     frame = inspect.currentframe().f_back
     local_vars = frame.f_locals
     t = threading.Thread(target=grav, daemon=True)
@@ -64,3 +53,9 @@ def with_names(*items):
                 break
 
     return [list(items), names]
+def Start():
+    t = threading.Thread(target=timer_thread, daemon=True)
+    t.start()
+    from HelperScripts.Manage.Sound.Music import Music
+    t = threading.Thread(target=Music, daemon=True)
+    t.start()
