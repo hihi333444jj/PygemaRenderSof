@@ -1,5 +1,5 @@
 import HelperScripts.GlobalVars as var
-from HelperScripts.ManageScene import AddObject,Group,DeleteObject
+from HelperScripts.Manage.Scene import AddObject,Group,DeleteObject
 from HelperScripts.Create_Shape import Rect
 from itertools import product
 import pygame
