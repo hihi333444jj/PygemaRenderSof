@@ -1,7 +1,7 @@
 
 from HelperScripts.Create_Shape import *
 from HelperScripts.Color import *
-from HelperScripts.ManageScene import *
+from HelperScripts.Manage.Scene import *
 from HelperScripts.Util import with_names
 from time import sleep
 import pygame
