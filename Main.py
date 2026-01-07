@@ -1,36 +1,32 @@
 import pygame
-from HelperScripts.ManageScene import *
-from HelperScripts.Util import StartAll
-import HelperScripts.GlobalVars as var
-
 from pygame import mixer
-import HelperScripts.ManageMusic as music
+from time import sleep
+from HelperScripts.Manage.Scene import *
+import HelperScripts.Util as Util
+import HelperScripts.GlobalVars as var
+import HelperScripts.Manage.Sound.Music as music
+import HelperScripts.Manage.Sound.Playlist as Playlist
+from Start import Start
+
+#Set Music quality
 mixer.init() 
-#Set File quality
-pygame.mixer.init(frequency=44100, size=-16, channels=2, buffer=512)
-
-if __name__ == "__main__":
-    pygame.init()
-def app():
-    return
-
+pygame.mixer.init(frequency=48000, size=-16, channels=1, buffer=1024)
+# region Vars to not edit
+var.ScreenSize = (pygame.display.get_window_size()[0],pygame.display.get_window_size()[1])
+var.UpdateFrame = True
+clock = pygame.time.Clock()
+# endregion
+ 
 def main():
-
-    StartAll()
-   
-    clock = pygame.time.Clock()
+    Util.Start() # starts other utility stuff such as music, and play time
+    var.Parts = Start(var.screen) # start the whole game
+    Playlist.AddFolder("Music",Name="Main")
+    Playlist.Load("Main",Random=True)
     running = True
-    #Start(screen)
-    var.ScreenSize = (pygame.display.get_window_size()[0],pygame.display.get_window_size()[1])
-    var.UpdateFrame = True
-    #var.GravObjects = [[['ball'],[25,1],.9,[55,55]]]
     # to add music do Music.Add() you can add a folder name or a sound file
+    #music.Add("Music",Random=True)
+    sleep(.1) #Fixes visule bugs
     while running:
-        #var.UpdateFrame = True
-        #Move(['sky', 'sun', 'background', 'tree','shop'],(1,1))
-        #Max = max(pygame.display.get_window_size()[0],pygame.display.get_window_size()[1])
-        #Line(random.randint(1,Max),random.randint(1,Max),random.randint(1,Max),random.randint(1,Max),RandomGradient(20,50,"right"),10, render=True)
-        
         for event in pygame.event.get():
             if event.type == pygame.QUIT: #end event/ close window if the X button is pressed
                 running = False
@@ -51,5 +47,6 @@ def main():
 
 if __name__ == "__main__":
     var.Parts = [[],[]]
+    pygame.init()
     main()
     
