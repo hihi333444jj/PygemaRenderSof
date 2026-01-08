@@ -1,6 +1,8 @@
 import pygame
 import math
 from HelperScripts.GlobalVars import screen
+import requests
+import io
 
 def Rect(X, Y, width, height, fill=(0,0,0), border=None, borderWidth=2,
          opacity=255, rotateAngle=0, align='left-top',
@@ -115,8 +117,10 @@ def Label(text,
           size=24,
           fill=(255, 255, 255),
           font=None,
-          Screen = screen,):
-    
+          Screen=screen,
+          rotateAngle=0,
+          render=False):
+
     global screen
     if Screen is None:
         Screen = screen
@@ -126,26 +130,41 @@ def Label(text,
 
     pos = (x, y)
 
+    # Render original text (white mask)
     text_surface = font.render(text, True, (255, 255, 255))
     text_w, text_h = text_surface.get_size()
 
+    # Original rect
+    rect = pygame.Rect(x, y, text_w, text_h)
+
+    # Prepare mask for gradient if needed
     mask_surface = pygame.Surface((text_w, text_h), pygame.SRCALPHA)
     mask_surface.blit(text_surface, (0, 0))
 
     is_gradient = isinstance(fill, dict) and fill.get("gradient")
 
+    # ---- NORMAL COLOR ----
     if not is_gradient:
-        colored = font.render(text, True, fill)
-        Screen.blit(colored, pos)
-        return
+        final_surf = font.render(text, True, fill)
 
-    grad_info = fill
+    # ---- GRADIENT ----
+    else:
+        final_surf = pygame.Surface((text_w, text_h), pygame.SRCALPHA)
+        final_surf.blit(fill, (0, 0))
+        final_surf.blit(mask_surface, (0, 0),
+                        special_flags=pygame.BLEND_RGBA_MULT)
 
-    final_surf = pygame.Surface((text_w, text_h), pygame.SRCALPHA)
-    final_surf.blit(fill, (0, 0))
-    final_surf.blit(mask_surface, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)
+    # ---- ROTATE ----
+    if rotateAngle != 0:
+        # Rotate the surface
+        final_surf = pygame.transform.rotate(final_surf, rotateAngle)
+        # Update rect so top-left is correct and click detection works
+        rect = final_surf.get_rect(center=rect.center)
 
-    Screen.blit(final_surf, pos)
+    # ---- RENDER OR RETURN ----
+    if render:
+        Screen.blit(final_surf, rect.topleft)
+    return [final_surf, rect]
 
 def Polygon(*args,
             fill=(0,0,0),
@@ -208,3 +227,75 @@ def Polygon(*args,
         Screen.blit(TempSurf, rect)
     else:
         return(TempSurf,rect)
+
+def Image(X, Y, file_path,
+          width=None, height=None,
+          opacity=255, rotateAngle=0,
+          Screen=screen, render=False):
+
+    try:
+        TempSurf = pygame.image.load(file_path).convert_alpha()
+    except Exception as e:
+        print(f"Failed to load image '{file_path}': {e}")
+        return
+
+    if width is not None and height is not None:
+        TempSurf = pygame.transform.scale(TempSurf, (width, height))
+    elif width is not None:  # preserve aspect ratio
+        ratio = width / TempSurf.get_width()
+        height = int(TempSurf.get_height() * ratio)
+        TempSurf = pygame.transform.scale(TempSurf, (width, height))
+    elif height is not None:
+        ratio = height / TempSurf.get_height()
+        width = int(TempSurf.get_width() * ratio)
+        TempSurf = pygame.transform.scale(TempSurf, (width, height))
+
+    TempSurf.set_alpha(opacity)
+
+    if rotateAngle != 0:
+        TempSurf = pygame.transform.rotate(TempSurf, rotateAngle)
+
+    RotatedRect = TempSurf.get_rect(topleft=(X, Y))
+
+    if render:
+        Screen.blit(TempSurf, RotatedRect)
+    else:
+        return (TempSurf, RotatedRect)
+
+def URLImage(X, Y, url,
+             width=None, height=None,
+             opacity=255, rotateAngle=0,
+             Screen=screen, render=False):
+
+    # Fetch image from URL
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        image_file = io.BytesIO(response.content)
+        TempSurf = pygame.image.load(image_file).convert_alpha()
+    except Exception as e:
+        print(f"Failed to load image from URL '{url}': {e}")
+        return
+
+    if width is not None and height is not None:
+        TempSurf = pygame.transform.scale(TempSurf, (width, height))
+    elif width is not None:
+        ratio = width / TempSurf.get_width()
+        height = int(TempSurf.get_height() * ratio)
+        TempSurf = pygame.transform.scale(TempSurf, (width, height))
+    elif height is not None:
+        ratio = height / TempSurf.get_height()
+        width = int(TempSurf.get_width() * ratio)
+        TempSurf = pygame.transform.scale(TempSurf, (width, height))
+
+    TempSurf.set_alpha(opacity)
+
+    if rotateAngle != 0:
+        TempSurf = pygame.transform.rotate(TempSurf, rotateAngle)
+
+    RotatedRect = TempSurf.get_rect(topleft=(X, Y))
+
+    if render:
+        Screen.blit(TempSurf, RotatedRect)
+    else:
+        return (TempSurf, RotatedRect)
