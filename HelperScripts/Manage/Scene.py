@@ -24,25 +24,37 @@ def DeleteObject(*args):
         #list.pop(numb) removes the list[numb] from the list and if no number givven removes the last value
         var.Parts[0].pop(Del)
         var.Parts[1].pop(Del)
+    var.UpdateFrame = True
 
 def Group(*Draw):
-    rects = []
+    pairs = []
 
-    # Collect all rects
-    for item in Draw:
-        if isinstance(item, tuple) and len(item) == 2:
-            rects.append(item[1])
-        elif isinstance(item, list):
-            for sub in item:
-                if isinstance(sub, tuple) and len(sub) == 2:
-                    rects.append(sub[1])
+    # Handle your parallel-lists structure
+    if len(Draw) == 2 and all(isinstance(x, list) for x in Draw):
+        objects_list, names_list = Draw
+        for obj in objects_list:
+            # unwrap one level if obj is [[Surface, Rect]]
+            if isinstance(obj, list) and len(obj) == 1 and isinstance(obj[0], list):
+                pairs.append(tuple(obj[0]))
+            else:
+                pairs.append(tuple(obj))
 
-    # If nothing to draw
-    if not rects:
+    # Original behavior (tuple or nested tuple)
+    else:
+        for item in Draw:
+            if isinstance(item, tuple) and len(item) == 2:
+                pairs.append(item)
+            elif isinstance(item, list):
+                for sub in item:
+                    if isinstance(sub, tuple) and len(sub) == 2:
+                        pairs.append(sub)
+
+    if not pairs:
         surf = pygame.Surface((1, 1), pygame.SRCALPHA)
         return surf, surf.get_rect(topleft=(0, 0))
 
-    # Compute bounding box
+    rects = [r for _, r in pairs]
+
     left   = min(r.left for r in rects)
     top    = min(r.top for r in rects)
     right  = max(r.right for r in rects)
@@ -53,15 +65,8 @@ def Group(*Draw):
 
     temp_surface = pygame.Surface((width, height), pygame.SRCALPHA)
 
-    # Blit with offset so everything fits
-    for item in Draw:
-        if isinstance(item, tuple) and len(item) == 2:
-            surf, rect = item
-            temp_surface.blit(surf, rect.move(-left, -top))
-        elif isinstance(item, list):
-            for sub in item:
-                if isinstance(sub, tuple) and len(sub) == 2:
-                    temp_surface.blit(sub[0], sub[1].move(-left, -top))
+    for surf, rect in pairs:
+        temp_surface.blit(surf, rect.move(-left, -top))
 
     return temp_surface, temp_surface.get_rect(topleft=(left, top))
 
