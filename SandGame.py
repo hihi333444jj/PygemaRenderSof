@@ -24,7 +24,7 @@ to_add = set()
 ActivePixels = set() #tuples work better becuse it will become very large
 # endregion
 
-# region helper defs
+#defs
 def idx(x, y): #this converts X,Y into a 2d array
     global height
     return (x * height + y)
