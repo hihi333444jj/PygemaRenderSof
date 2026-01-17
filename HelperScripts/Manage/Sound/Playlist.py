@@ -64,8 +64,3 @@ def RemoveSong(*Song,Playlist = None):
         PlaylistNumb = Playlists[1].index(Playlist)
         for song in Song:
             Playlists[0][PlaylistNumb].index(song)
-
-def RemoveSong(*Song,Playlist = None):
-    Playlist = Playlists[1].index(Playlist)
-    for song in Song:
-        Playlists[0][Playlist].pop(song)
