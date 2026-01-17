@@ -4,41 +4,59 @@ from HelperScripts.GlobalVars import screen
 import requests
 import io
 
-def Rect(X, Y, width, height, fill=(0,0,0), border=None, borderWidth=2,
-         opacity=255, rotateAngle=0, align='left-top',
-         Screen = screen, render = False):
-    
-    #Create rectangle/frame
-    total_width = width + (borderWidth*2 if border else 0)
-    total_height = height + (borderWidth*2 if border else 0)
-    TempSurf = pygame.Surface((total_width, total_height), pygame.SRCALPHA)
+def Rect(
+    X, Y, width, height,
+    fill=(0, 0, 0),
+    border=None,
+    borderWidth=2,
+    opacity=255,
+    rotateAngle=0,
+    align='left-top',
+    Screen=screen,
+    render=False
+):
+    has_border = border is not None
+    bw = borderWidth if has_border else 0
 
-    # Draw the border first
-    if border:
+    total_width = width + bw * 2
+    total_height = height + bw * 2
+
+    surf = pygame.Surface((total_width, total_height), pygame.SRCALPHA)
+
+    if has_border:
         if isinstance(border, list) and border[0] == "gradient":
-            TempSurf.blit(pygame.transform.scale(border[1], (total_width, total_height)), (0,0))
+            surf.blit(
+                pygame.transform.smoothscale(border[1], (total_width, total_height)),
+                (0, 0)
+            )
         else:
-            pygame.draw.rect(TempSurf, border, pygame.Rect(0, 0, total_width, total_height))
+            pygame.draw.rect(
+                surf,
+                border,
+                (0, 0, total_width, total_height)
+            )
 
-    # Draw the inner fill
-    fill_surf = pygame.Surface((width, height), pygame.SRCALPHA)
+    inner_rect = pygame.Rect(bw, bw, width, height)
+
     if isinstance(fill, list) and fill[0] == "gradient":
-        fill_surf.blit(pygame.transform.scale(fill[1], (width, height)), (0, 0))
+        surf.blit(
+            pygame.transform.smoothscale(fill[1], (width, height)),
+            inner_rect.topleft
+        )
     else:
-        fill_surf.fill((fill[0], fill[1], fill[2]))
-    TempSurf.blit(fill_surf, (borderWidth if border else 0, borderWidth if border else 0))
-    
-    #set transparency
-    TempSurf.set_alpha(opacity)
-    #then rotate image
-    RotatedSurf = pygame.transform.rotate(TempSurf, rotateAngle)
-    #set final pos and rotashe/confirm it
-    RotatedRect = RotatedSurf.get_rect(topleft=(X, Y))
-    #add to canvis
+        surf.fill(fill, inner_rect)
+
+    if opacity < 255:
+        surf.set_alpha(opacity)
+
+    if rotateAngle:
+        surf = pygame.transform.rotate(surf, rotateAngle)
+
+    rect = surf.get_rect(topleft=(X, Y))
+
     if render:
-        Screen.blit(RotatedSurf, RotatedRect)
-    else:
-        return (RotatedSurf, RotatedRect)
+        Screen.blit(surf, rect)
+    return surf, rect
 
 def Oval(X, Y, width, height, fill=(0,0,0), border=None,
      borderWidth=2, opacity=255, rotateAngle=0,
@@ -130,38 +148,29 @@ def Label(text,
 
     pos = (x, y)
 
-    # Render original text (white mask)
     text_surface = font.render(text, True, (255, 255, 255))
     text_w, text_h = text_surface.get_size()
 
-    # Original rect
     rect = pygame.Rect(x, y, text_w, text_h)
 
-    # Prepare mask for gradient if needed
     mask_surface = pygame.Surface((text_w, text_h), pygame.SRCALPHA)
     mask_surface.blit(text_surface, (0, 0))
 
     is_gradient = isinstance(fill, dict) and fill.get("gradient")
 
-    # ---- NORMAL COLOR ----
     if not is_gradient:
         final_surf = font.render(text, True, fill)
 
-    # ---- GRADIENT ----
     else:
         final_surf = pygame.Surface((text_w, text_h), pygame.SRCALPHA)
         final_surf.blit(fill, (0, 0))
         final_surf.blit(mask_surface, (0, 0),
                         special_flags=pygame.BLEND_RGBA_MULT)
 
-    # ---- ROTATE ----
-    if rotateAngle != 0:
-        # Rotate the surface
-        final_surf = pygame.transform.rotate(final_surf, rotateAngle)
-        # Update rect so top-left is correct and click detection works
-        rect = final_surf.get_rect(center=rect.center)
 
-    # ---- RENDER OR RETURN ----
+    if rotateAngle != 0:
+        final_surf = pygame.transform.rotate(final_surf, rotateAngle)
+        rect = final_surf.get_rect(center=rect.center)
     if render:
         Screen.blit(final_surf, rect.topleft)
     return [final_surf, rect]
@@ -174,14 +183,12 @@ def Polygon(*args,
             rotateAngle=0,
             Screen = screen,render = False):
     points = args
-    # Collect numeric points
     pts = [a for a in args if isinstance(a, (int, float))]
     if len(pts) % 2 != 0 or len(pts) < 6:
-        return  # need at least 3 points (6 numbers)
+        return
 
     pointList = [(pts[i], pts[i+1]) for i in range(0, len(pts), 2)]
 
-    # Bounding box
     xs = [p[0] for p in pointList]
     ys = [p[1] for p in pointList]
     minx, maxx = min(xs), max(xs)
@@ -189,23 +196,18 @@ def Polygon(*args,
     w = max(maxx - minx, 1)
     h = max(maxy - miny, 1)
 
-    # Temporary surface
     TempSurf = pygame.Surface((w + borderWidth*2, h + borderWidth*2), pygame.SRCALPHA)
     shifted = [(x - minx + borderWidth, y - miny + borderWidth) for (x, y) in pointList]
 
-    # --- FILL ---
     if isinstance(fill, list) and fill[0] == "gradient":
-        # gradient fill
         grad_surf = pygame.transform.scale(fill[1], (w, h))
         mask = pygame.Surface((w, h), pygame.SRCALPHA)
         pygame.draw.polygon(mask, (255,255,255), [(x-borderWidth, y-borderWidth) for (x,y) in shifted])
         grad_surf.blit(mask, (0,0), special_flags=pygame.BLEND_RGBA_MULT)
         TempSurf.blit(grad_surf, (borderWidth, borderWidth))
     else:
-        # solid fill
         pygame.draw.polygon(TempSurf, fill, shifted)
 
-    # --- BORDER ---
     if border is not None:
         if isinstance(border, list) and border[0] == "gradient":
             bw, bh = w + borderWidth*2, h + borderWidth*2
