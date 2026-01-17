@@ -17,14 +17,17 @@ def AddObject(*args): #input object then name so [rect(args), "rectangle"]
         var.Parts[1].append(i[1])
     var.UpdateFrame = True
 
-def DeleteObject(*args):
+def RemoveObject(*args):
     for i in args:
-        Del = var.Parts[1].index(i)
-        #list.remove(Var) deletes the item that is called Var from list
-        #list.pop(numb) removes the list[numb] from the list and if no number givven removes the last value
-        var.Parts[0].pop(Del)
-        var.Parts[1].pop(Del)
+
+        if i in var.Parts[1]:
+            idx = var.Parts[1].index(i)
+
+            var.Parts[0].pop(idx)
+            var.Parts[1].pop(idx)
+
     var.UpdateFrame = True
+
 
 def Group(*Draw):
     pairs = []
