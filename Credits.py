@@ -4,7 +4,7 @@ import requests
 import io
 import webbrowser
 import HelperScripts.Create_Shape as shape
-from HelperScripts.Manage.Scene import AddObject, DeleteObject
+from HelperScripts.Manage.Scene import *
 import HelperScripts.GlobalVars as Vars
 
 CurrentLableNumb = 0
@@ -176,7 +176,7 @@ def HandleScroll(Event):
     temp_surf2 = pygame.Surface(box_surf.get_size(), pygame.SRCALPHA)
     temp_surf2.blit(box_surf, (0,0))
     temp_surf2.blit(temp_surf, (0,YPos))
-    DeleteObject("CreditsBox")
+    RemoveObject("CreditsBox")
     obj_name = "CreditsBox"
     AddObject([[temp_surf2, box_rect], obj_name])
     print(Event)
