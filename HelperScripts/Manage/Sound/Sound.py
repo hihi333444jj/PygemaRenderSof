@@ -4,18 +4,29 @@ from time import sleep
 from pathlib import Path
 
 # region Sound
+Sounds = []
+def Play(SoundFile,SoundName):
+    global Sounds
+    sound = mixer.Sound(SoundFile)
+    pos = len(Sounds[0])
+    Sounds[0].append(sound)
+    Sounds[1].append(sound.get_length())
+    Sounds[2].append(0)
+    Sounds[3].append(SoundName)
+    Sounds[0][pos].play()
 
-def AddSound(*args): #input object then name so [rect(args), "rectangle"]
-    for i in args:
-        var.Sounds[0].append(i[0])
-        var.Sounds[1].append(i[1])
-    var.UpdateFrame = True
-def DeleteSound(*args):
-    for i in args:
-        Del = var.Sounds[1].index(i)
-        #list.remove(Var) deletes the item that is called Var from list
-        #list.pop(numb) removes the list[numb] from the list and if no number givven removes the last value
-        var.Sounds[0].pop(Del)
-        var.Sounds[1].pop(Del)
+"""
+-------------------- W.I.P. --------------------
 
+def Stop(*args):
+    for i in args:
+        Del = Sounds[1].index(i)
+        Sounds[0].pop(Del)
+        Sounds[1].pop(Del)
+
+def MainSound():
+    while True:
+        print()
+        sleep(1)
 # endregion
+"""
