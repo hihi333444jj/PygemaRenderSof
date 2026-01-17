@@ -5,7 +5,7 @@ FPS = 60
 
 
 # region You do not need to change past here...
-Parts = []
+Parts = [[],[]]
 screen = pygame.display.set_mode(ScreenSize,pygame.RESIZABLE)
 Sounds =  [] #sounds that are currently playing
 PartsOri = []
